@@ -1,0 +1,40 @@
+<apex:page sidebar="false" showHeader="false">
+<!--Taked from https://amtkrsingh.wordpress.com/2014/03/05/d3-charts-in-visualforce-page-using-salesforce-matrix-report->
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+ <script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.3.3/d3.min.js"></script>
+ <script src="//cdnjs.cloudflare.com/ajax/libs/nvd3/1.0.0-beta/nv.d3.min.js"></script>
+
+ <script>
+
+ var h = 400,
+    w = 800;
+
+ $(document).ready(function(){
+    // Make sure you are using a MATRIX Report
+    $.ajax('/services/data/v29.0/analytics/reports/00O00000009pibi',
+        {
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader('Authorization', 'Bearer {!$Api.Session_ID}');
+            },
+            success: function(response) {
+                console.log(response);
+                var barwidth = w / response.length;
+                var chart = nv.models.multiBarChart();
+                var chartData = [];
+                $.each(response.groupingsDown.groupings, function(di,de) {
+                    var values = [];
+                    chartData.push({"key":de.label, "values": values});
+                    $.each(response.groupingsAcross.groupings, function(ai,ae) {
+                        values.push({"x": ae.label, "y": response.factMap[de.key+"!"+ae.key].aggregates[0].value});
+                    });
+                    console.log(chartData);
+                });
+                d3.select('#chart').append('svg').datum(chartData).transition().duration(100).call(chart);
+            }
+        }
+    );
+});
+</script>
+<svg id="chart" height="500px" width="2500px"></svg>
+
+</apex:page>
