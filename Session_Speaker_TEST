@@ -1,0 +1,47 @@
+@istest
+public class Session_Speaker_TEST {
+    
+static testMethod void createTenThousandSessionSpeakers(){
+    //  data preparation.
+    List<Session__c> sessions = new List<Session__c>{};
+    List<Speaker__c> speakers = new List<Speaker__c>{};  
+    List<Session_Speaker__c> sessionSpeakers = new List<Session_Speaker__c>{};     
+        
+    for(Integer i = 0; i < 5; i++){
+        Session__c a = new Session__c(Name = 'Test Session ' + i,Level__c='Advanced',Description__c='TEST',Session_date__c = system.now()+i);
+        sessions.add(a);
+    }
+    
+    for(Integer i = 0; i < 2; i++){
+        Speaker__c a = new Speaker__c(Email__c='angel.ib+'+i+'@gmail.com',First_Name__c='Angel '+i,Last_Name__c = 'Ibarra');
+        speakers.add(a); 
+    }    
+    
+	insert sessions; 
+    insert speakers;
+
+    for(Session__c ss:sessions) 
+    {
+        	
+        for(Speaker__c sp:speakers)
+        {	
+            system.debug('sp>>'+sp);
+            Session_Speaker__c ssSp = new Session_Speaker__c();
+            ssSp.Session__c=ss.id;
+            ssSp.Speaker__c=sp.id;
+            sessionSpeakers.add(ssSp);
+        }
+    }
+    
+    // Start the test
+    test.startTest();
+		
+    // Insert the Session Speaker Records records that cause the trigger to execute.
+    insert sessionSpeakers; 
+		
+    // Stop the test, this changes limit context back to test from trigger.
+    test.stopTest();
+		
+}
+    
+}
